@@ -1,0 +1,31 @@
+.history-page { display: flex; flex-direction: column; gap: 1.5rem; }
+.history-header { display: flex; justify-content: space-between; align-items: center; }
+.history-header h2 { font-family: 'Syne', sans-serif; font-size: 1.5rem; }
+.refresh-btn {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text-muted); padding: 0.4rem 1rem;
+  border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+.refresh-btn:hover { border-color: var(--accent); color: var(--text); }
+
+.loading { text-align: center; color: var(--text-muted); padding: 2rem; }
+.empty-state { text-align: center; padding: 4rem; color: var(--text-muted); }
+.empty-state span { font-size: 2.5rem; display: block; margin-bottom: 0.8rem; }
+
+.history-list { display: flex; flex-direction: column; gap: 1rem; }
+.history-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.2rem 1.4rem;
+  display: flex; flex-direction: column; gap: 0.6rem;
+  transition: border-color 0.2s;
+}
+.history-card:hover { border-color: var(--accent); }
+.history-card-header { display: flex; align-items: center; gap: 1rem; }
+.history-verdict { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; }
+.history-confidence { font-size: 0.8rem; color: var(--text-muted); margin-left: auto; }
+.delete-btn { background: none; border: none; cursor: pointer; font-size: 1rem; opacity: 0.5; transition: opacity 0.2s; }
+.delete-btn:hover { opacity: 1; }
+.history-text { font-size: 0.9rem; color: var(--text); font-style: italic; }
+.history-explanation { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+.history-date { font-size: 0.75rem; color: var(--text-muted); }

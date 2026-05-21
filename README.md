@@ -1,22 +1,26 @@
 # ⚡ TruthLens — AI Hallucination Checker
 
-An AI-powered fact-checking web app that detects hallucinations in AI-generated text using Groq's LLaMA 3 model.
+An AI-powered bilingual fact-checking web app that detects hallucinations 
+in AI-generated text using real-time web search and LLaMA 3.3.
 
-## Features
+## ✨ Features
 - ✅ Detects TRUE / FALSE / PARTIALLY TRUE statements
+- 🌐 Real-time web search verification (Tavily API)
+- 🤖 Powered by Groq's LLaMA 3.3 70B model
+- 🗣️ Tamil & English bilingual support
+- 🎙️ Voice input support
 - 📊 Confidence score with visual bar
-- 🔍 Key claims breakdown
-- ✏️ Corrections for false statements
+- 🔍 Key claims breakdown + corrections
 - 📜 MySQL-backed check history
-- 🗑 Delete history entries
+- 🗑 Delete / Clear all history
 
-## Tech Stack
-- **Frontend:** React
-- **Backend:** Python + FastAPI
-- **AI:** Groq API (LLaMA 3)
+## 🛠️ Tech Stack
+- **Frontend:** React.js, CSS3, Web Speech API
+- **Backend:** Python, FastAPI, Uvicorn
+- **AI:** Groq API (LLaMA 3.3 70B), Tavily Search API
 - **Database:** MySQL
 
-## Setup
+## 🚀 Setup
 
 ### 1. Database
 ```sql
@@ -28,7 +32,7 @@ mysql -u root -p < backend/schema.sql
 cd backend
 pip install -r requirements.txt
 cp .env.example .env
-# Edit .env with your GROQ_API_KEY and MySQL credentials
+# Add GROQ_API_KEY, TAVILY_API_KEY, DB credentials
 uvicorn main:app --reload
 ```
 
@@ -39,13 +43,13 @@ npm install
 npm start
 ```
 
-## API Endpoints
+## 📡 API Endpoints
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | /check | Check a statement |
+| POST | /check | Fact-check a statement |
 | GET | /history | Get check history |
-| DELETE | /history/{id} | Delete a history item |
+| DELETE | /history/all | Clear all history |
+| DELETE | /history/{id} | Delete one item |
 
-## Author
-Mahima P
-"# AI-hallucination_checker" 
+## 👩‍💻 Author
+**Mahima P** — Full Stack Developer

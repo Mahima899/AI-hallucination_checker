@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from groq import Groq
+from tavily import TavilyClient
 import mysql.connector
 import os
 import json
@@ -28,10 +29,12 @@ def get_db():
         database=os.getenv("DB_NAME", "hallucination_checker")
     )
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+tavily = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
 
 class CheckRequest(BaseModel):
     text: str
+    lang: str = "en"
 
 class CheckResponse(BaseModel):
     verdict: str
@@ -39,6 +42,7 @@ class CheckResponse(BaseModel):
     explanation: str
     key_claims: list[str]
     corrections: str | None
+    sources: list[str] | None
 
 @app.get("/")
 def root():
@@ -49,21 +53,42 @@ def check_hallucination(req: CheckRequest):
     if not req.text.strip():
         raise HTTPException(status_code=400, detail="Text cannot be empty")
 
-    prompt = f"""You are a fact-checking AI. Analyze the following statement and determine if it contains hallucinations or factual errors.
+    today = datetime.now().strftime("%A, %B %d, %Y")
 
-Statement: "{req.text}"
+    try:
+        search_results = tavily.search(query=req.text, max_results=3)
+        sources = [r["url"] for r in search_results.get("results", [])]
+        search_context = "\n".join([
+            f"- {r['title']}: {r['content'][:200]}"
+            for r in search_results.get("results", [])
+        ])
+    except Exception:
+        sources = []
+        search_context = "No web search results available."
 
-Respond ONLY in this exact JSON format (no extra text):
+    lang_instruction = "Respond entirely in Tamil language (தமிழில் மட்டும் பதில் தாருங்கள்)." if req.lang == "ta" else "Respond in English."
+
+    prompt = f"""You are a fact-checking AI. Today's date is {today}. {lang_instruction}
+
+First understand what the user is claiming, even if it's incomplete or a question.
+Then verify it using the web search results.
+
+User Input: "{req.text}"
+
+Web Search Results:
+{search_context}
+
+Based on today's date ({today}) and web search results, respond ONLY in this exact JSON format (no extra text):
 {{
   "verdict": "TRUE" or "FALSE" or "PARTIALLY TRUE",
   "confidence": <number 0-100>,
-  "explanation": "<clear explanation of why it is true/false/partial>",
+  "explanation": "<clear explanation based on today's date and web results, in the specified language>",
   "key_claims": ["<claim 1>", "<claim 2>", "<claim 3>"],
   "corrections": "<corrected version if false or partial, else null>"
 }}"""
 
     try:
-        response = client.chat.completions.create(
+        response = groq_client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.2,
@@ -76,6 +101,7 @@ Respond ONLY in this exact JSON format (no extra text):
                 raw = raw[4:]
         raw = raw.strip()
         result = json.loads(raw)
+        result["sources"] = sources
 
         try:
             db = get_db()
@@ -98,7 +124,7 @@ Respond ONLY in this exact JSON format (no extra text):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/history")
-def get_history(limit: int = 10):
+def get_history(limit: int = 20):
     try:
         db = get_db()
         cursor = db.cursor(dictionary=True)
@@ -110,6 +136,19 @@ def get_history(limit: int = 10):
             if row["created_at"]:
                 row["created_at"] = str(row["created_at"])
         return {"history": rows}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/history/all")
+def clear_all_history():
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM checks")
+        db.commit()
+        cursor.close()
+        db.close()
+        return {"message": "All history cleared"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

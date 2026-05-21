@@ -79,3 +79,73 @@
 .section ul li { font-size: 0.9rem; line-height: 1.5; }
 
 .corrections { background: rgba(244,162,97,0.07); border-radius: 10px; padding: 1rem; }
+.sources-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sources-list li a {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  color: #a0aec0;
+  text-decoration: none;
+  font-size: 0.82rem;
+  transition: all 0.2s;
+}
+
+.sources-list li a:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+.lang-toggle {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+.lang-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 0.3rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+.lang-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.voice-btn {
+  background: linear-gradient(135deg, #7c6af7, #9f8fff);
+  border: none;
+  color: #fff;
+  padding: 0.6rem 1.1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(124,106,247,0.4);
+}
+.voice-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124,106,247,0.5);
+}
+.voice-btn.listening {
+  background: linear-gradient(135deg, #ff4d6d, #ff6b6b);
+  box-shadow: 0 2px 8px rgba(255,77,109,0.5);
+  animation: pulse 1s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}

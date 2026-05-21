@@ -23,6 +23,17 @@ export default function HistoryPage() {
     fetchHistory();
   };
 
+ const clearAll = async () => {
+  if (window.confirm("Clear all history?")) {
+    const res = await fetch("http://localhost:8000/history/all", { method: "DELETE" });
+    if (res.ok) {
+      setHistory([]); // ← fetchHistory() call இல்லாம direct clear பண்ணு (faster)
+    } else {
+      alert("Failed to clear history!");
+    }
+  }
+};
+
   useEffect(() => { fetchHistory(); }, []);
 
   const verdictColor = {
@@ -38,6 +49,7 @@ export default function HistoryPage() {
       <div className="history-header">
         <h2>Check History</h2>
         <button className="refresh-btn" onClick={fetchHistory}>↻ Refresh</button>
+        <button className="clear-btn" onClick={clearAll}>🗑 Clear All</button>
       </div>
 
       {loading && <div className="loading">Loading history...</div>}
